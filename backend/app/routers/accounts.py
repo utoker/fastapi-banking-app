@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.services.account_service import AccountService
 from app.exceptions import AccountNotFoundError
 from app.dependencies import get_account_service
-from app.schemas.account import AccountCreate, AccountResponse
+from app.schemas.account import AccountCreate, AccountResponse, AmountRequest
 
 router = APIRouter(prefix="/accounts", tags=["accounts"])
 
@@ -18,5 +18,12 @@ def list_accounts(account_service: AccountService = Depends(get_account_service)
 def get_account(account_id: int, account_service: AccountService = Depends(get_account_service)):
     try:
         return account_service.get_account(account_id)
+    except AccountNotFoundError:
+        raise HTTPException(status_code=404, detail="Account not found")
+
+@router.post("/{account_id}/deposit", response_model=AccountResponse)
+def deposit(account_id: int, amount_request: AmountRequest, account_service: AccountService = Depends(get_account_service)):
+    try:
+        return account_service.deposit(account_id, amount_request.amount)
     except AccountNotFoundError:
         raise HTTPException(status_code=404, detail="Account not found")

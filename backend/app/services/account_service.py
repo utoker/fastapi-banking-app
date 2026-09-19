@@ -1,5 +1,6 @@
 from app.exceptions import AccountNotFoundError
 from app.models.account import Account
+from decimal import Decimal
 from app.repositories.account_repository import AccountRepository
 
 class AccountService:
@@ -17,3 +18,9 @@ class AccountService:
 
     def list_accounts(self) -> list[Account]:
         return self.account_repository.list_all()
+
+    def deposit(self, account_id: int, amount: Decimal) -> Account:
+        account = self.get_account(account_id)
+        new_balance = account.balance + amount
+        account.balance = new_balance
+        return self.account_repository.update(account)

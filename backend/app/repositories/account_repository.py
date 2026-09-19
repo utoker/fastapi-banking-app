@@ -21,3 +21,7 @@ class AccountRepository:
 
     def list_all(self) -> list[Account]:
         return list(self.accounts.values())
+
+    def update(self, account: Account) -> Account:
+        self.accounts[account.id] = account
+        return account
