@@ -27,3 +27,12 @@ def deposit(account_id: int, amount_request: AmountRequest, account_service: Acc
         return account_service.deposit(account_id, amount_request.amount)
     except AccountNotFoundError:
         raise HTTPException(status_code=404, detail="Account not found")
+
+@router.post("/{account_id}/withdraw", response_model=AccountResponse)
+def withdraw(account_id: int, amount_request: AmountRequest, account_service: AccountService = Depends(get_account_service)):
+    try:
+        return account_service.withdraw(account_id, amount_request.amount)
+    except AccountNotFoundError:
+        raise HTTPException(status_code=404, detail="Account not found")
+    except InsufficientFundsError:
+        raise HTTPException(status_code=400, detail="Insufficient funds")

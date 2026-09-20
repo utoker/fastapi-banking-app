@@ -1,4 +1,4 @@
-from app.exceptions import AccountNotFoundError
+from app.exceptions import AccountNotFoundError, InsufficientFundsError
 from app.models.account import Account
 from decimal import Decimal
 from app.repositories.account_repository import AccountRepository
@@ -22,5 +22,14 @@ class AccountService:
     def deposit(self, account_id: int, amount: Decimal) -> Account:
         account = self.get_account(account_id)
         new_balance = account.balance + amount
+        account.balance = new_balance
+        return self.account_repository.update(account)
+
+    def withdraw(self, account_id: int, amount: Decimal) -> Account:
+        account = self.get_account(account_id)
+        
+        if amount > account.balance:
+            raise InsufficientFundsError(f"Account with ID {account_id} has insufficient funds")
+        new_balance = account.balance - amount
         account.balance = new_balance
         return self.account_repository.update(account)
