@@ -3,3 +3,6 @@ class AccountNotFoundError(Exception):
 
 class InsufficientFundsError(Exception):
     pass
+
+class TransferError(Exception):
+    pass

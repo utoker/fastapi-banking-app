@@ -1,4 +1,4 @@
-from app.exceptions import AccountNotFoundError, InsufficientFundsError
+from app.exceptions import AccountNotFoundError, InsufficientFundsError, TransferError
 from app.models.account import Account
 from decimal import Decimal
 from app.repositories.account_repository import AccountRepository
@@ -33,3 +33,13 @@ class AccountService:
         new_balance = account.balance - amount
         account.balance = new_balance
         return self.account_repository.update(account)
+
+    def transfer(self, from_account_id: int, to_account_id: int, amount: Decimal) -> tuple[Account, Account]:
+        if from_account_id == to_account_id:
+            raise TransferError("Cannot transfer to the same account")
+
+        to_account = self.get_account(to_account_id)
+        from_account = self.withdraw(from_account_id, amount)
+        to_account = self.deposit(to_account_id, amount)
+
+        return (from_account, to_account)
