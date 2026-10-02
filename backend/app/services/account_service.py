@@ -38,7 +38,7 @@ class AccountService:
         if from_account_id == to_account_id:
             raise TransferError("Cannot transfer to the same account")
 
-        to_account = self.get_account(to_account_id)
+        self.get_account(to_account_id)
         from_account = self.withdraw(from_account_id, amount)
         to_account = self.deposit(to_account_id, amount)
 
